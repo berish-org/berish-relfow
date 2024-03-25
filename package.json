@@ -1,0 +1,37 @@
+{
+  "name": "@berish/reflow",
+  "version": "0.1.0",
+  "description": "Reflow",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "git@gitlab.com:berish/packages/berish-linq.git",
+  "author": "Berishev Ravil <quadraticteam@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "keywords": [],
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "test:dev": "jest --config jestconfig.json --watch --verbose=false",
+    "build": "tsc -p .",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "prettier": "^1.18.2",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "@berish/linq": "^1.2.0",
+    "eventemitter2": "^6.4.9"
+  }
+}
