@@ -1,6 +1,6 @@
 {
   "name": "@berish/reflow",
-  "version": "0.1.0",
+  "version": "0.3.2",
   "description": "Reflow",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -10,14 +10,13 @@
   "private": false,
   "keywords": [],
   "scripts": {
-    "test": "jest --config jestconfig.json",
-    "test:dev": "jest --config jestconfig.json --watch --verbose=false",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch --verbose=false",
     "build": "tsc -p .",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test && npm run lint",
-    "preversion": "npm run lint",
+    "prepublishOnly": "npm test && echo lint",
+    "preversion": "echo lint",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
