@@ -1,4 +1,5 @@
 export * from './useCallback';
+export * from './useCatch';
 export * from './useContext';
 export * from './useEffect';
 export * from './useImperativeHandle';

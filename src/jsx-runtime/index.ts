@@ -1,7 +1,7 @@
 import { createElement } from '../ReflowElement';
 import { FunctionComponent, ReflowElement, ReflowNode } from '../types';
 
-namespace JSX {
+export namespace JSX {
   export type HTMLAttributes = Record<string, JSXNode | undefined> & JSXChildren;
 
   // Allow any HTML tag
@@ -12,10 +12,7 @@ namespace JSX {
   export type Element = any;
 }
 
-// Export the main namespace
-export { JSX };
-
-export function renderJSX(tag: FunctionComponent, props: Record<string, any>, _key?: string): JSX.Element {
+export function renderJSX(tag: FunctionComponent, props: Record<string, any>, key?: string): JSX.Element {
   if (typeof tag === 'function') {
     // handling Function Components
     return createElement(tag, props);

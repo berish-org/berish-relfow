@@ -1,6 +1,6 @@
 import { useReflowHook } from '../ReflowHook';
 import { ReflowOwner, useReflowOwner } from '../ReflowOwner';
-import { createRef } from '../ReflowRef';
+import { createRef } from '../refs';
 import { MutableRefObject, RefObject } from '../types';
 
 const USE_REF_HOOK = Symbol('USE_REF_HOOK');

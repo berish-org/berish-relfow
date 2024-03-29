@@ -6,6 +6,7 @@ export interface ReflowEmitterMap {
   mounted: void;
   unmounted: void;
   updated: void;
+  error: unknown;
 }
 
 const ReflowOwnerToReflowEmitterMap = new WeakMap<ReflowOwner, ReflowEmitter>();
@@ -32,7 +33,14 @@ export class ReflowEmitter {
   }
 
   emit<Key extends keyof ReflowEmitterMap>(key: Key, payload: ReflowEmitterMap[Key]) {
-    return this.emitter.emit(key, payload);
+    try {
+      return this.emitter.emit(key, payload);
+    } catch (err) {
+      if (key === 'error') throw err;
+      if (this.emitter.listenerCount('error') === 0) throw err;
+
+      return this.emit('error', err);
+    }
   }
 
   on<Key extends keyof ReflowEmitterMap>(key: Key, listener: (value: ReflowEmitterMap[Key]) => void) {

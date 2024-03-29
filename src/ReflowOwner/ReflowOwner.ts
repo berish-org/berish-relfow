@@ -91,31 +91,52 @@ export class ReflowOwner {
   }
 
   mount() {
-    if (!this._isMounted) {
-      this.render(true);
-      this._isMounted = true;
+    try {
+      if (!this._isMounted) {
+        this.render(true);
+        this._isMounted = true;
 
-      this._emitter.emit('mounted', void 0);
+        this._emitter.emit('mounted', void 0);
+      }
+    } catch (err) {
+      this.throwError(err);
     }
   }
 
   render(force?: boolean) {
-    if (force || !isPropsEquals(this.previousProps, this.currentProps)) {
-      this.reflow();
+    try {
+      if (force || !isPropsEquals(this.previousProps, this.currentProps)) {
+        this.reflow();
 
-      this._emitter.emit('updated', void 0);
+        this._emitter.emit('updated', void 0);
+      }
+    } catch (err) {
+      this.throwError(err);
     }
   }
 
   unmount() {
-    const childOwners = this._childElements.map((element) => ReflowOwner.getFromElement(element));
+    try {
+      const childOwners = this._childElements.map(element => ReflowOwner.getFromElement(element));
 
-    for (const owner of childOwners) {
-      owner.unmount();
+      for (const owner of childOwners) {
+        owner.unmount();
+      }
+
+      this._isMounted = false;
+      this._emitter.emit('unmounted', void 0);
+    } catch (err) {
+      this.throwError(err);
     }
+  }
 
-    this._isMounted = false;
-    this._emitter.emit('unmounted', void 0);
+  throwError(err: any) {
+    try {
+      this._emitter.emit('error', err);
+    } catch (err) {
+      if (this.parent) this.parent.throwError(err);
+      throw err;
+    }
   }
 
   protected reflow() {
