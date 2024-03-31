@@ -84,8 +84,11 @@ export class ReflowOwner {
   }
 
   relink(element: ReflowElement) {
+    const prevElement = this._element;
     this._element = element;
+
     ReflowElementToReflowOwnerMap.set(element, this);
+    ReflowElementToReflowOwnerMap.delete(prevElement);
 
     this.render();
   }

@@ -10,13 +10,7 @@ export function useImperativeHandle<T, R extends T>(ref: Ref<T> | undefined, ini
       if (typeof ref === 'function') {
         ref(refData);
       } else if (typeof ref === 'object') {
-        const prevValue = ref.current;
         Object.defineProperty(ref, 'current', { value: refData });
-
-        const owner = ReflowOwner.getFromRef(ref);
-        if (owner && !Object.is(prevValue, ref.current)) {
-          owner.render(true);
-        }
       }
     }
   }, deps);
