@@ -44,6 +44,8 @@ export class ReflowOwner {
   private _prevProps: Record<string, any> = {};
   private _childElements: ReflowElement[];
 
+  private _reflowProcessing = false;
+
   private constructor(element: ReflowElement, parent: ReflowOwner) {
     this._element = element;
     this._parent = parent;
@@ -64,6 +66,10 @@ export class ReflowOwner {
 
   get currentProps() {
     return this._element.props;
+  }
+
+  get reflowProcessing() {
+    return this._reflowProcessing;
   }
 
   get displayName() {
@@ -143,6 +149,8 @@ export class ReflowOwner {
   }
 
   protected reflow() {
+    this._reflowProcessing = true;
+
     const hookManager = ReflowHookManager.getFromOwner(this);
     const childNode = this.wrapOwnerContext(() => this._element.type(this.currentProps));
     const newChildElements = flatReflowNodeToElements(childNode);
@@ -151,19 +159,21 @@ export class ReflowOwner {
     for (const mutation of mutations) {
       if (mutation.type === 'mount') {
         const owner = ReflowOwner.createOwnerFromElement(mutation.element, this);
-        owner.mount();
+        if (owner) owner.mount();
       } else if (mutation.type === 'unmount') {
         const owner = ReflowOwner.getFromElement(mutation.element);
-        owner.unmount();
+        if (owner) owner.unmount();
       } else if (mutation.type === 'update') {
         const owner = ReflowOwner.getFromElement(mutation.prevElement);
-        owner.relink(mutation.newElement);
+        if (owner) owner.relink(mutation.newElement);
       }
     }
 
     hookManager.resetHookIndex();
+
     this._childElements = newChildElements;
     this._prevProps = this.currentProps;
+    this._reflowProcessing = false;
   }
 
   protected wrapOwnerContext<T>(callback: () => T) {

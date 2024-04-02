@@ -21,12 +21,13 @@ export function useReducer<R extends Reducer<any, any>, I>(reducer: R, initializ
   const hook = useReflowHook<UseReducerState<R>>(USE_REDUCER_HOOK, () => {
     let state: ReducerState<R> = typeof initializer === 'function' ? initializer(initializerArg) : (initializerArg as ReducerState<R>);
 
-    const dispatch: Dispatch<ReducerAction<R>> = (action) => {
+    const dispatch: Dispatch<ReducerAction<R>> = action => {
       const newState = reducer(state, action);
       if (!Object.is(state, newState)) {
         state = newState;
         hook.state.state = newState;
-        owner.render(true);
+
+        if (!owner.reflowProcessing) owner.render(true);
       }
     };
 
