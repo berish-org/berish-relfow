@@ -34,9 +34,10 @@ export class ReflowEmitter {
 
   emit<Key extends keyof ReflowEmitterMap>(key: Key, payload: ReflowEmitterMap[Key]) {
     try {
+      if (key === 'error') throw payload;
+
       return this.emitter.emit(key, payload);
     } catch (err) {
-      if (key === 'error') throw err;
       if (this.emitter.listenerCount('error') === 0) throw err;
 
       return this.emit('error', err);

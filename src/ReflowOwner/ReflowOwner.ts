@@ -44,7 +44,8 @@ export class ReflowOwner {
   private _prevProps: Record<string, any> = {};
   private _childElements: ReflowElement[];
 
-  private _reflowProcessing = false;
+  private _renderProcessing = false;
+  private _renderNextRequested = false;
 
   private constructor(element: ReflowElement, parent: ReflowOwner) {
     this._element = element;
@@ -66,10 +67,6 @@ export class ReflowOwner {
 
   get currentProps() {
     return this._element.props;
-  }
-
-  get reflowProcessing() {
-    return this._reflowProcessing;
   }
 
   get displayName() {
@@ -112,15 +109,34 @@ export class ReflowOwner {
     }
   }
 
+  nextTickRender(force?: boolean) {
+    if (this._renderNextRequested) return;
+
+    if (force || !isPropsEquals(this.previousProps, this.currentProps)) {
+      this._renderNextRequested = true;
+
+      process.nextTick(() => {
+        if (this._renderNextRequested) {
+          this._renderNextRequested = false;
+
+          this.render(true);
+        }
+      });
+    }
+  }
+
   render(force?: boolean) {
     try {
       if (force || !isPropsEquals(this.previousProps, this.currentProps)) {
-        this.reflow();
+        this._renderProcessing = true;
 
+        this.reflow();
         this._emitter.emit('updated', void 0);
       }
     } catch (err) {
       this.throwError(err);
+    } finally {
+      this._renderProcessing = false;
     }
   }
 
@@ -129,7 +145,7 @@ export class ReflowOwner {
       const childOwners = this._childElements.map(element => ReflowOwner.getFromElement(element));
 
       for (const owner of childOwners) {
-        owner.unmount();
+        if (owner) owner.unmount();
       }
 
       this._isMounted = false;
@@ -149,8 +165,6 @@ export class ReflowOwner {
   }
 
   protected reflow() {
-    this._reflowProcessing = true;
-
     const hookManager = ReflowHookManager.getFromOwner(this);
     const childNode = this.wrapOwnerContext(() => this._element.type(this.currentProps));
     const newChildElements = flatReflowNodeToElements(childNode);
@@ -173,7 +187,6 @@ export class ReflowOwner {
 
     this._childElements = newChildElements;
     this._prevProps = this.currentProps;
-    this._reflowProcessing = false;
   }
 
   protected wrapOwnerContext<T>(callback: () => T) {
