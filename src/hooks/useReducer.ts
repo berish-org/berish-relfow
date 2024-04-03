@@ -27,7 +27,9 @@ export function useReducer<R extends Reducer<any, any>, I>(reducer: R, initializ
         state = newState;
         hook.state.state = newState;
 
-        if (!owner.reflowProcessing) owner.render(true);
+        process.nextTick(() => {
+          if (!owner.reflowProcessing) owner.render(true);
+        });
       }
     };
 

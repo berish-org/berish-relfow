@@ -113,17 +113,15 @@ export class ReflowOwner {
   }
 
   render(force?: boolean) {
-    process.nextTick(() => {
-      try {
-        if (force || !isPropsEquals(this.previousProps, this.currentProps)) {
-          this.reflow();
+    try {
+      if (force || !isPropsEquals(this.previousProps, this.currentProps)) {
+        this.reflow();
 
-          this._emitter.emit('updated', void 0);
-        }
-      } catch (err) {
-        this.throwError(err);
+        this._emitter.emit('updated', void 0);
       }
-    });
+    } catch (err) {
+      this.throwError(err);
+    }
   }
 
   unmount() {
