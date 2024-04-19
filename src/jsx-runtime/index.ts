@@ -1,3 +1,4 @@
+import { Fragment as F } from '../Fragment';
 import { createElement } from '../ReflowElement';
 import { FunctionComponent, ReflowElement, ReflowNode } from '../types';
 
@@ -25,6 +26,7 @@ export function renderJSX(tag: FunctionComponent, props: Record<string, any>, ke
 export const jsx = renderJSX;
 export const jsxs = renderJSX;
 export const jsxDEV = renderJSX;
+export const Fragment = F;
 
 export class RenderedNode {
   public constructor(public readonly string: string) {}
