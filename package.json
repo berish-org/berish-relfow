@@ -1,6 +1,6 @@
 {
   "name": "@berish/reflow",
-  "version": "0.3.13",
+  "version": "0.3.15",
   "description": "Reflow",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
